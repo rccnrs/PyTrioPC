@@ -30,9 +30,9 @@ class RobotDriverOCX():
     def connect(self):
         if self.connected==0:
             try:
-                if self.B32_64 = '32b':
+                if self.B32_64 == '32b':
                      self.trio = win32com.client.Dispatch("TrioPC.TrioPCCtrl.1")
-                elif self.B32_64 = '64b':
+                elif self.B32_64 == '64b':
                      self.trio = win32com.client.Dispatch("TrioPC64.TrioPCCtrl.1")
                 
                 if self.trio == None:
@@ -336,7 +336,10 @@ class RobotDriverProc(Process):
         #repeat until sw 'STOP' command is received
         while not self.stop:
             #receive sw commands
-            swr = self.swpipe.recv()
+            try:
+                swr = self.swpipe.recv()
+            except:
+                continue
             print(swr)
             self.swpipe.send({'command':'ACK', 'id':self.id})
             #decode commands
@@ -348,16 +351,17 @@ class RobotDriverProc(Process):
                     self.connected = False
             elif swr['command']=='TRIO CONNECT':
                 if self.connected:
-                #do nothing
+                    print("TRIO CONNECT")
+                    #do nothing
                 else:
-                    if self.runmode='HW':
+                    if self.runmode=='HW':
                         self.hwinterface = RobotDriverOCX(self.B32_64)
-                    elif self.runmode='EMULATE':
+                    elif self.runmode=='EMULATE':
                         self.hwinterface = RobotDriverEMULATE(self.B32_64)
                     else:
                         #log exception
-                    self.hwinterface.connect()
-                    self.connected = self.hwinterface.connected
+                        self.hwinterface.connect()
+                        self.connected = self.hwinterface.connected
             else:
                 if self.connected:
                     #decode HW commands
@@ -376,7 +380,7 @@ class RobotDriverProc(Process):
                     else:
                         #unknown command, send NACK
                         self.swpipe.send({'command':'NACK', 'id':self.id})
-                else
+                else:
                     #not connected or unknown command, send NACK
                     self.swpipe.send({'command':'NACK', 'id':self.id})
         return 0

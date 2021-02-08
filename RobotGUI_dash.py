@@ -52,7 +52,7 @@ app.layout = html.Div(children=[
               [Input(component_id='button_connect', component_property='n_clicks')]) 
 def connect_click(click):
     print('Send message for connect function, wait return flag')
-    guiconnect[0].send(['Connection request'])
+    guiconnect[0].send({'command':'CONNECT', 'id':'gui'})
     if click%2 == 0:
         return "#FF5E5E", False
     else:
@@ -67,7 +67,7 @@ def connect_click(click):
               [Input(component_id='button_stop', component_property='n_clicks')]) 
 def connect_stop(click):
     print('Send message for connect function, wait return flag')
-    guiconnect[0].send(['STOP request'])
+    guiconnect[0].send({'command':'STOP', 'id':'gui'})
     return "#FF6E5E", True
 
 
@@ -100,7 +100,7 @@ def render_content(tab):
               ]) 
 def run_callback(c,a,l,zt,tl):
     print(c,a,l,zt,tl)
-    guiconnect[0].send(['Command', a, l, zt, tl])
+    guiconnect[0].send({'command':'Command', 'a':a, 'l':l, 'zt':zt, 'tl':tl])
     return guicp.status_return(c,a,l,zt,tl)
 
     

@@ -35,7 +35,10 @@ def guireceiver(pipe):
 
 # launch modules
 if __name__ == '__main__':
-    Test=True
+    Test=False
+    #swpipe = mp.Pipe()
+    hwpipe = mp.Pipe()
+
     ### HW interface
     proc_HW = HW()
     proc_HW.initialize('RD1', '64b', 'EMULATE', hwpipe[1])
@@ -45,7 +48,8 @@ if __name__ == '__main__':
     swpipe = mp.Pipe()
     hwpipe = mp.Pipe()
     proc_RMM = RMM()
-    proc_RMM.initialize('RMM1', swpipe[1], hwpipe[0])
+    #proc_RMM.initialize('RMM1', swpipe[1], hwpipe[0])
+    proc_RMM.initialize('RMM1', pipecontrolgui[1], hwpipe[0])
     proc_RMM.start()
     if Test:
         swpipe[0].send({'command':'PING', 'id':'main_producer'})
@@ -53,8 +57,8 @@ if __name__ == '__main__':
         swpipe[0].send({'command':'STOP', 'id':'main_producer'})
     
     ###controler
-    p=mp.Process(target=guireceiver, args=(pipecontrolgui,))
-    p.start()
+    #p=mp.Process(target=guireceiver, args=(pipecontrolgui,))
+    #p.start()
     
     ###gui dash
     controlgui.run_server(debug=True)
